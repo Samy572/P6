@@ -5,12 +5,13 @@ const app = express();
 // Importation de mongoose
 const mongoose = require('mongoose');
 // Importation de notre router sauces
-const saucesRoutes = require('./routes/sauce')
+const sauceRoutes = require('./routes/sauce')
 //Importation de notre router user
 const userRoutes = require('./routes/user'); 
 const path = require('path');
 const cors = require('cors');
 
+app.use(cors()); 
 
 
 
@@ -27,7 +28,7 @@ mongoose
 // Ce middleware permet d'acceder à notre api depuis n'importe quel origine, d'ajouter des headers aux requête envoyées verst notre api
 // d'envoyer des requête avec les méthodes mentionnés get, post ect..
 
-app.use(cors()); 
+ 
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader(
@@ -48,7 +49,8 @@ app.use(express.json());
 
 // Utilisation de notre router
 app.use('/api/auth', userRoutes);
-app.use('/api/sauces', saucesRoutes);
+app.use('/api/sauces', sauceRoutes);
+
 
 app.use('/image', express.static(path.join(__dirname, 'image')));
 // On exporte notre application pour pouvoir y acceder depuis les autres fichiers de notre projet.

@@ -11,11 +11,11 @@ const sauceCtrl = require('../controllers/sauce');
 
 router.post('/', auth, multer, sauceCtrl.createSauce);
 router.get('/', auth, sauceCtrl.getAllSauce);
-router.get('/:id',  sauceCtrl.getOneSauce);
+router.get('/:id', auth, sauceCtrl.getOneSauce);
 router.put('/:id', auth, multer, sauceCtrl.modifySauce);
 router.delete('/:id', auth, sauceCtrl.deleteSauce);
 
-router.post('/:id/like', auth, multer, sauceCtrl.like);
+router.post('/:id/like', auth, sauceCtrl.like);
 
 // On exporte notre router
 module.exports = router;
