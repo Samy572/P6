@@ -13,7 +13,7 @@ const cors = require('cors');
 
 app.use(cors()); 
 
-
+// Connection à mongoose
 
 mongoose
 	.connect(
@@ -25,7 +25,7 @@ mongoose
 
 
 
-// Ce middleware permet d'acceder à notre api depuis n'importe quel origine, d'ajouter des headers aux requête envoyées verst notre api
+// Ce middleware permet d'acceder à notre api depuis n'importe quel origine, d'ajouter des headers aux requête envoyées vers notre api
 // d'envoyer des requête avec les méthodes mentionnés get, post ect..
 
  

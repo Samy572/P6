@@ -1,5 +1,6 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
+const sauce = require('../models/sauce');
 
 // Requête POST nouvel sauces qui vont être rajouté à la base
 exports.createSauce = (req, res, next) => {
@@ -10,8 +11,8 @@ exports.createSauce = (req, res, next) => {
 	const sauce = new Sauce({
 		...sauceObjet,
 		imageUrl: `${req.protocol}://${req.get('host')}/image/${req.file.filename}`,
-		like: 0,
-		dislike: 0,
+		likes: 0,
+		dislikes: 0,
 		usersLiked: [],
 		usersDisliked: [],
 	});
@@ -58,9 +59,65 @@ exports.modifySauce = (req, res, next) => {
 	});
 };
 
+// Routes pour les likes et les dislikes 
+
 exports.like = (req, res, next) => {
-	const like = req.body.like;
-};
+Sauce.findOne({_id : req.params.id})
+.then((sauce) =>{
+	// Si l'id de l'utilisateur n'est pas dans userliked dans la bdd et que like est à 1
+	if (!sauce.usersLiked.includes(req.body.userId) && req.body.like === 1) {
+		// Maj bdd 
+		Sauce.updateOne({_id: sauce._id},{
+			// Incrémentation du like 
+			$inc: {likes: 1}, 
+			// On pousse le like dans userliked
+			$push: {usersLiked: req.body.userId}
+		})
+		.then(() => res.status(201).json({message: 'sauce like +1' }))
+		.catch((error) => res.status(400).json({ error }));
+		
+		// Si l'id de l'utilisateur est dans userliked dans la bdd et que le like est à 0
+	}	else if (sauce.usersLiked.includes(req.body.userId) && req.body.like === 0) {
+		
+		Sauce.updateOne({_id: sauce._id},{
+			// On enleve 1 like 
+			$inc: {likes: -1}, 
+			// On supprime du tableau un like en bdd 
+			$pull: {usersLiked: req.body.userId}
+		})
+		.then(() => res.status(201).json({message: 'sauce like -1' }))
+		.catch((error) => res.status(400).json({ error }));
+	};
+		// Si l'id de l'utilisateur n'est pas dans userdisliked dans la bdd et que like est à -1
+	if (!sauce.usersDisliked.includes(req.body.userId) && req.body.like === -1) {
+		
+		Sauce.updateOne({_id: sauce._id},{
+			// On ajoute un dislike
+			$inc: {dislikes: 1}, 
+			// On pousse le dislikes dans la bdd dans userdiliked
+			$push: {usersDisliked: req.body.userId}
+		})
+		.then(() => res.status(201).json({message: 'sauce dislike +1' }))
+		.catch((error) => res.status(400).json({ error }));
+		
+		// Si l'id de l'utilisateur est dans usersDisliked dans la bdd et que le dislikes est à 0
+	} else if (sauce.usersDisliked.includes(req.body.userId) && req.body.like === 0) {
+		
+		Sauce.updateOne({_id: sauce._id},{
+			// On enlève un dislike
+			$inc: {dislikes: -1}, 
+			// On supprime un dislike du tableau en bdd
+			$pull: {usersDisliked: req.body.userId}
+		})
+		.then(() => res.status(201).json({message: 'sauce dislike -1' }))
+		.catch((error) => res.status(400).json({ error }));
+	};
+	
+
+	
+}).catch((error) => res.status(404).json({ error }));
+}
+
 
 // Route pour la suppresions des données.
 
