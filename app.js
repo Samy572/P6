@@ -10,6 +10,7 @@ const sauceRoutes = require('./routes/sauce')
 const userRoutes = require('./routes/user'); 
 const path = require('path');
 const cors = require('cors');
+require('dotenv').config();
 
 app.use(cors()); 
 
@@ -17,7 +18,7 @@ app.use(cors());
 
 mongoose
 	.connect(
-		'mongodb+srv://Samy:samy123@cluster0.r2ogo.mongodb.net/?retryWrites=true&w=majority',
+		process.env.PASSWORD_DB,
 		{ useNewUrlParser: true, useUnifiedTopology: true }
 	)
 	.then(() => console.log('Connexion à MongoDB réussie !'))
