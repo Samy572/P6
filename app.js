@@ -2,16 +2,18 @@
 const express = require('express');
 // Appel de la méthode express ce qui permet de créer une application express
 const app = express();
-// Importation de mongoose
+// Importation de mongoose 
 const mongoose = require('mongoose');
-// Importation de notre router sauces
+// Importation de notre router sauces pour acceder aux differentes routes
 const sauceRoutes = require('./routes/sauce')
-//Importation de notre router user
+//Importation de notre router user pour acceder aux differentes routes
 const userRoutes = require('./routes/user'); 
+// fournit des fonctions utiles pour interagir avec les chemins de fichiers
 const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
+// Cela permet le partage des ressources entre les origines afin que le serveur soit accessible par d'autre origine
 app.use(cors()); 
 
 // Connection à mongoose
@@ -48,11 +50,11 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 
-// Utilisation de notre router
+// Racine de nos routes pour les user et les sauces
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', sauceRoutes);
 
-
+// Indique à express de gerer la ressources image de maniere statique dans un sous repertoire (diraname) pour chaque requete
 app.use('/image', express.static(path.join(__dirname, 'image')));
 // On exporte notre application pour pouvoir y acceder depuis les autres fichiers de notre projet.
 module.exports = app;

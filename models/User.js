@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// S'assurera que deux utilisateurs ne puissent partager la même adresse e-mail.
 const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = mongoose.Schema({

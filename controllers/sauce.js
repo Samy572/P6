@@ -1,6 +1,8 @@
+// Permet d'acceder à notre model Sauce
 const Sauce = require('../models/sauce');
+// donne acces à des methodes file systeme
 const fs = require('fs');
-const sauce = require('../models/sauce');
+
 
 // Requête POST nouvel sauces qui vont être rajouté à la base
 exports.createSauce = (req, res, next) => {
@@ -38,26 +40,23 @@ exports.getOneSauce = (req, res, next) => {
 // Routes put pour la modification des données.
 
 exports.modifySauce = (req, res, next) => {
-	Sauce.findOne({ _id: req.params.id }).then((sauce) => {
-		const filename = sauce.imageUrl.split('/image/')[1];
-		fs.unlink(`image/${filename}`, () => {
-			const sauceObjet = req.file
-				? {
-						...JSON.parse(req.body.sauce),
+	
+			const sauceObjet = req.file ?
+				 {
+					...JSON.parse(req.body.sauce),
 						imageUrl: `${req.protocol}://${req.get('host')}/image/${
 							req.file.filename
-						}`,
-				  }
-				: { ...req.body };
+						}`,	
+				  }: { ...req.body };
+				// Mise à jour de la sauce
 			Sauce.updateOne(
 				{ _id: req.params.id },
 				{ ...sauceObjet, _id: req.params.id }
 			)
 				.then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
 				.catch((error) => res.status(400).json({ error }));
-		});
-	});
-};
+		};
+
 
 // Routes pour les likes et les dislikes 
 
@@ -122,9 +121,11 @@ Sauce.findOne({_id : req.params.id})
 // Route pour la suppresions des données.
 
 exports.deleteSauce = (req, res, next) => {
+	// On cherche l'objet avec l'url de l'image
 	Sauce.findOne({ _id: req.params.id })
 		.then((sauce) => {
 			const filename = sauce.imageUrl.split('/image/')[1];
+			// Suppression du fichier
 			fs.unlink(`image/${filename}`, () => {
 				Sauce.deleteOne({ _id: req.params.id })
 					.then(() => res.status(200).json({ message: 'Sauce supprimé !' }))

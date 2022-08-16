@@ -10,12 +10,15 @@ const User = require('../models/User');
 
 // Pour l'inscription
 exports.signup = (req, res, next) => {
+  // Hachage du mdp 10 = nombre de tour de hach
     bcrypt.hash(req.body.password, 10)
+    // On recupere le hach qu'on va enregistrer dans un nouveau user
       .then(hash => {
         const user = new User({
           email: req.body.email,
           password: hash
         });
+        // Methode save pour l'enregistrer dans la bdd
         user.save()
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
@@ -32,14 +35,15 @@ exports.signup = (req, res, next) => {
     .then(user => {
       // Si l'utilisateur n'existe pas dans notre bdd
         if (!user) {
-            return res.status(401).json({ message: 'Paire login/mot de passe incorrecte'});
+            return res.status(401).json({ message: 'Paire identifiant/mot de passe incorrecte'});
         }
+        // on utilise la méthode compare de bcrypt pour comparer le mdp transmis avec celui de la bdd
         bcrypt.compare(req.body.password, user.password)
           
             .then(valid => {
               // Si le password est incorrect
                 if (!valid) {
-                    return res.status(401).json({ message: 'Paire login/mot de passe incorrecte' });
+                    return res.status(401).json({ message: 'Paire identifiant/mot de passe incorrecte' });
                 // Si le password est correct
                 }else{
                 res.status(200).json({
